@@ -1,0 +1,8 @@
+{
+  "workbench.settings.editor": "ui",
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  },
+  "git.branchProtection": ["prod/main"],
+  "git.branchProtectionPrompt": "alwaysCommitToNewBranch"
+}
