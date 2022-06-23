@@ -1,6 +1,3 @@
-const colors = {
-  primary: 'red',
-  secondary: 'blue',
-}
+const colors = {}
 
 export default colors

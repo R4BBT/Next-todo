@@ -5,7 +5,7 @@ import {
   GridItem,
 } from '@chakra-ui/react'
 import { ErrorBoundary } from 'components/error/error-boundary'
-import { Layout, Navbar } from 'components/page'
+import { Footer, Layout, Navbar } from 'components/page'
 import theme from 'styles/theme'
 import { AuthContextProvider } from 'utils/contexts/auth-context'
 
@@ -21,7 +21,9 @@ function MyApp({ Component, pageProps }) {
           <GridItem>
             <Layout>{Component}</Layout>
           </GridItem>
-          <GridItem>Footer</GridItem>
+          <GridItem>
+            <Footer />
+          </GridItem>
         </Grid>
       </>
     ))

@@ -1,37 +1,199 @@
-import React, { useContext } from 'react'
+import { useToast } from '@chakra-ui/react'
+import {
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  OAuthProvider,
+  onAuthStateChanged,
+  signOut,
+} from 'firebase/auth'
+import React, { useContext, useEffect, useState } from 'react'
+import Cookies from 'universal-cookie'
+import { clientAuth } from 'utils/configs/firebase-client'
 
 export const AuthContext = React.createContext({
+  firebaseUid: '',
   loggedIn: false,
   loading: false,
   onEmailPasswordLogin: () => {},
   onGoogleLogin: () => {},
+  onMicrosoftLogin: () => {},
   onLogout: () => {},
   onEmailPasswordSignUp: () => {},
-  onConfirmPasswordReset: () => {},
-  onPasswordReset: () => {},
-  setRedirect: () => {},
-  getRedirect: () => {},
-  clearRedirect: () => {},
-  redirectKey: '',
 })
 
 export const useAuth = () => useContext(AuthContext)
 
 export const AuthContextProvider = ({ children }) => {
-  const value = {
-    // loggedIn,
-    // loading,
-    // onEmailPasswordLogin,
-    // onGoogleLogin,
-    // onLogout,
-    // onEmailPasswordSignUp,
-    // onPasswordReset,
-    // onConfirmPasswordReset,
-    // setRedirect,
-    // getRedirect,
-    // clearRedirect,
-    // redirectKey,
+  const [loading, setLoading] = useState(true)
+  const [authenticated, setAuthenticated] = useState(false)
+  const [firebaseUid, setFirebaseUid] = useState('')
+
+  const toast = useToast()
+
+  useEffect(() => {
+    const cookie = new Cookies()
+    const unsubscribe = onAuthStateChanged(clientAuth, async (user) => {
+      // user is same as <clientAuth className="currentUser"></clientAuth>
+      if (user) {
+        setLoading(false)
+        setAuthenticated(true)
+        setFirebaseUid(user.uid)
+        // Check if there is IdToken cookie or if the cookie has been tampered with, if yes reset cookie
+        if (
+          !cookie.get('idToken') ||
+          cookie.get('idToken') !== clientAuth.currentUser.getIdToken()
+        ) {
+          const accessToken = await clientAuth.currentUser.getIdToken()
+          cookie.set('idToken', accessToken, {
+            path: '/',
+            sameSite: 'strict',
+            secure: true,
+          })
+        }
+      } else {
+        setLoading(false)
+        setAuthenticated(false)
+        setFirebaseUid('')
+        cookie.remove('idToken')
+      }
+    })
+    return () => unsubscribe()
+  }, [setAuthenticated, setLoading])
+
+  const alreadyLoggedInResponse = ({ description }) => {
+    toast({
+      status: 'error',
+      title: `You're currently signed in`,
+      description: `${description}`,
+    })
   }
 
+  const onEmailPasswordSignUp = async (email, password) => {
+    if (!authenticated) {
+      setLoading(true)
+      await createUserWithEmailAndPassword(clientAuth, email, password)
+      try {
+        toast({
+          status: 'success',
+          title: 'We have successfully created your account',
+          description: "You're now being logged into our platform",
+          isClosable: true,
+        })
+      } catch (error) {
+        toast({
+          status: 'error',
+          title: 'We have failed to created your account',
+          description: `${error}`,
+          isClosable: true,
+        })
+      }
+    } else {
+      alreadyLoggedInResponse({
+        description: `You cannot sign in while signed in 😔`,
+      })
+    }
+  }
+
+  const onEmailPasswordLogin = async (email, password) => {
+    if (!authenticated) {
+      setLoading(true)
+      try {
+        await signInWithEmailAndPassword(clientAuth, email, password)
+      } catch (error) {
+        toast({
+          status: 'error',
+          title: 'Please try again',
+          description: `${error}`,
+          isClosable: true,
+        })
+      }
+    }
+  }
+
+  const onGoogleLogin = async () => {
+    const googleProvider = new GoogleAuthProvider()
+    if (!authenticated) {
+      setLoading(true)
+      try {
+        await signInWithPopup(clientAuth, googleProvider)
+        toast({
+          status: 'success',
+          title: "You're now logged into our platform",
+          description: "You're now authenticated",
+          isClosable: true,
+        })
+      } catch (error) {
+        toast({
+          status: 'error',
+          title: 'We encountered an error with logging you in',
+          description: `${error}`,
+          isClosable: true,
+        })
+      }
+    } else {
+      alreadyLoggedInResponse({
+        description: `You cannot sign in while signed in 😔`,
+      })
+    }
+  }
+
+  const onMicrosoftLogin = async () => {
+    const microsoftProvider = new OAuthProvider('microsoft.com')
+    if (!authenticated) {
+      setLoading(true)
+      try {
+        await signInWithPopup(clientAuth, microsoftProvider)
+        toast({
+          status: 'success',
+          title: "You're now logged into our platform",
+          description: "You're now authenticated",
+          isClosable: true,
+        })
+      } catch (error) {
+        toast({
+          status: 'error',
+          title: 'We encountered an error with logging you in',
+          description: `${error}`,
+          isClosable: true,
+        })
+      }
+    } else {
+      alreadyLoggedInResponse({
+        description: `You cannot sign in while signed in 😔`,
+      })
+    }
+  }
+
+  const onLogout = async () => {
+    if (authenticated) {
+      try {
+        await signOut(clientAuth)
+        toast({
+          status: 'success',
+          title: 'We hope to see you again soon',
+          description: 'You have been successfully logged out',
+          isClosable: true,
+        })
+      } catch (error) {
+        toast({
+          status: 'error',
+          title: 'We encountered an error with signing you out',
+          description: `${error}`,
+          isClosable: true,
+        })
+      }
+    }
+  }
+
+  const value = {
+    firebaseUid,
+    loading,
+    authenticated,
+    onEmailPasswordLogin,
+    onGoogleLogin,
+    onMicrosoftLogin,
+    onLogout,
+    onEmailPasswordSignUp,
+  }
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
