@@ -1,3 +1,13 @@
 # Next-todo
 
-A profile showcase project I am currently building
+A showcase NEXTJS Todo application I am currently building
+
+Technologies used in this project:
+
+- NextJS
+- Firebase firestore
+- Firebase authentication
+- ChakraUI
+- React-hook-form
+- Universal Cookie
+- ESLint

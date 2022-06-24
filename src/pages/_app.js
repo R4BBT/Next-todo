@@ -14,7 +14,7 @@ function MyApp({ Component, pageProps }) {
     Component.getLayout ||
     ((Component) => (
       <>
-        <Grid templateRows="auto  1fr auto" height="100vh">
+        <Grid templateRows="auto 1fr auto" height="100vh">
           <GridItem>
             <Navbar />
           </GridItem>

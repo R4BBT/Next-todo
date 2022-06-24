@@ -17,7 +17,7 @@ export const MicrosoftLoginButton = ({ ...rest }) => {
         onClick={OAuthSignInHandler}
         leftIcon={<FaMicrosoft />}
       >
-        Continue with Google
+        Continue with Microsoft
       </Button>
     </Flex>
   )

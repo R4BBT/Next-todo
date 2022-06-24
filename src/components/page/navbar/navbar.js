@@ -18,7 +18,7 @@ import {
 } from '@chakra-ui/react'
 import { SignUpLoginModal } from 'components/auth'
 import Link from 'next/link'
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { IconContext } from 'react-icons'
 import { FiChevronDown } from 'react-icons/fi'
 import { IoIosSunny, IoMdMoon } from 'react-icons/io'
@@ -28,16 +28,19 @@ import { useAuth } from 'utils/contexts/auth-context'
 import { AuthenticatedMenu } from './authenticated-menu'
 import { UnauthenticatedMenu } from './unauthenticated-menu'
 
+// TODO: Add src to Avatar
+
 export const Navbar = () => {
   const bg = useColorModeValue('white', 'gray.900')
   // const { isOpen, onOpen, onClose } = useDisclosure() //isOpen, onOpen, onClose
   const { colorMode, toggleColorMode } = useColorMode()
   const companyName = 'Todo App'
-  const menuButtonRef = React.useRef()
+  // const menuButtonRef = React.useRef()
 
   const { authenticated } = useAuth()
 
   const name = clientAuth.currentUser?.displayName
+  const userPhoto = clientAuth.currentUser?.photoURL
   const accountType = null
 
   const [signUpMode, setSignUpMode] = useState(false)
@@ -159,20 +162,25 @@ export const Navbar = () => {
                 transition="all 0.3s"
                 _focus={{ boxShadow: 'none' }}
               >
-                <Flex ml={3}>
-                  <Avatar size={'sm'} src={'image.jpg'} />
+                <Flex ml={3} alignItems="center">
+                  <Avatar
+                    name={name}
+                    size={'sm'}
+                    src={userPhoto}
+                    bg="gray.400"
+                  />
                   <VStack
                     display={{ base: 'none', md: 'flex' }}
                     alignItems="flex-start"
                     spacing="1px"
                     ml={2}
                   >
-                    <Text fontSize="sm">{name || 'Username'}</Text>
+                    <Text fontSize="sm">{name ? name : 'Username'}</Text>
                     <Text fontSize="xs" color="gray.600">
                       {accountType || 'Standard'}
                     </Text>
                   </VStack>
-                  <Box display={{ base: 'none', md: 'flex' }}>
+                  <Box display={{ base: 'none', md: 'flex' }} ml={2}>
                     <FiChevronDown />
                   </Box>
                 </Flex>

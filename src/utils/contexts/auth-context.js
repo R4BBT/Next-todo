@@ -4,6 +4,7 @@ import {
   GoogleAuthProvider,
   OAuthProvider,
   onAuthStateChanged,
+  signInWithPopup,
   signOut,
 } from 'firebase/auth'
 import React, { useContext, useEffect, useState } from 'react'
@@ -11,7 +12,7 @@ import Cookies from 'universal-cookie'
 import { clientAuth } from 'utils/configs/firebase-client'
 
 export const AuthContext = React.createContext({
-  firebaseUid: '',
+  user: {},
   loggedIn: false,
   loading: false,
   onEmailPasswordLogin: () => {},
@@ -26,7 +27,7 @@ export const useAuth = () => useContext(AuthContext)
 export const AuthContextProvider = ({ children }) => {
   const [loading, setLoading] = useState(true)
   const [authenticated, setAuthenticated] = useState(false)
-  const [firebaseUid, setFirebaseUid] = useState('')
+  const [user, setUser] = useState({})
 
   const toast = useToast()
 
@@ -37,7 +38,7 @@ export const AuthContextProvider = ({ children }) => {
       if (user) {
         setLoading(false)
         setAuthenticated(true)
-        setFirebaseUid(user.uid)
+        setUser(user)
         // Check if there is IdToken cookie or if the cookie has been tampered with, if yes reset cookie
         if (
           !cookie.get('idToken') ||
@@ -53,7 +54,7 @@ export const AuthContextProvider = ({ children }) => {
       } else {
         setLoading(false)
         setAuthenticated(false)
-        setFirebaseUid('')
+        setUser({})
         cookie.remove('idToken')
       }
     })
@@ -186,7 +187,7 @@ export const AuthContextProvider = ({ children }) => {
   }
 
   const value = {
-    firebaseUid,
+    user,
     loading,
     authenticated,
     onEmailPasswordLogin,
