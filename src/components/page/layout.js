@@ -1,12 +1,13 @@
-import { Box } from '@chakra-ui/react'
 // import { ForgotPasswordModal, LoginModal, SignUpModal } from 'components/auth'
+
+import { Container } from '@chakra-ui/react'
 
 export const Layout = ({ children }) => {
   return (
     <>
-      <Box pr={10} maxWidth="full" height="100%">
+      <Container py={12} maxWidth="container.xl" height="100%">
         {children}
-      </Box>
+      </Container>
     </>
   )
 }

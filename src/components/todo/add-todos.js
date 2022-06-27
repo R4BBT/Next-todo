@@ -1,6 +1,5 @@
 import {
   Button,
-  Container,
   Flex,
   FormControl,
   GridItem,
@@ -46,24 +45,22 @@ export const AddTodos = ({ ...rest }) => {
       pt={5}
       {...rest}
     >
-      <Container maxWidth="container.xl">
-        <FormControl>
-          <Flex>
-            <InputGroup>
-              <Input
-                id="title"
-                name="title"
-                placeholder="New Task"
-                mr={3}
-                color="white"
-                _placeholder={{ color: useColorModeValue('black', 'white') }}
-                {...register('title', { required: true })}
-              />
-            </InputGroup>
-            <Button type="submit">Add</Button>
-          </Flex>
-        </FormControl>
-      </Container>
+      <FormControl>
+        <Flex>
+          <InputGroup>
+            <Input
+              id="title"
+              name="title"
+              placeholder="New Task"
+              mr={3}
+              color={{ color: useColorModeValue('black', 'white') }}
+              _placeholder={{ color: useColorModeValue('black', 'white') }}
+              {...register('title', { required: true })}
+            />
+          </InputGroup>
+          <Button type="submit">Add</Button>
+        </Flex>
+      </FormControl>
     </GridItem>
   )
 }
