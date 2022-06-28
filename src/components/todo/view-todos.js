@@ -1,10 +1,4 @@
-import {
-  GridItem,
-  ListItem,
-  Spinner,
-  UnorderedList,
-  useToast,
-} from '@chakra-ui/react'
+import { GridItem, Spinner, UnorderedList, useToast } from '@chakra-ui/react'
 import { Card } from 'components/general'
 import {
   collection,
@@ -15,6 +9,7 @@ import {
 } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
 import { db } from 'utils/configs/firebase-client'
+import { TodoListItem } from './view-todo-list'
 
 export const ViewTodos = ({ ...rest }) => {
   const [data, setData] = useState()
@@ -59,16 +54,12 @@ export const ViewTodos = ({ ...rest }) => {
   return (
     <GridItem {...rest}>
       <Card>
-        <UnorderedList spacing={4} styleType="none">
+        <UnorderedList spacing={4} styleType="none" ml={0}>
           {isLoading ? (
             <Spinner />
           ) : data ? (
             data.map((task) => {
-              return (
-                <ListItem key={task.id} id={task.id}>
-                  title: {task.title}
-                </ListItem>
-              )
+              return <TodoListItem key={task.id} id={task.id} data={task} />
             })
           ) : (
             <Spinner />

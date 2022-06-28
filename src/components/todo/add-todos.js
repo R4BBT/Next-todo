@@ -1,66 +1,36 @@
-import {
-  Button,
-  Flex,
-  FormControl,
-  GridItem,
-  Input,
-  InputGroup,
-  useColorModeValue,
-  useToast,
-} from '@chakra-ui/react'
-import { addDoc, collection } from 'firebase/firestore'
-import { useForm } from 'react-hook-form'
-import { db } from 'utils/configs/firebase-client'
+import { Button, Center, Divider, GridItem } from '@chakra-ui/react'
+import { useState } from 'react'
+import { AddTodoInput } from './add-todo-input'
 
 export const AddTodos = ({ ...rest }) => {
-  const toast = useToast()
-  const { handleSubmit, register, setError } = useForm()
+  const [showTodo, setShowTodo] = useState(false)
 
-  const onAddTaskErrorHandler = () => {}
-
-  const onAddTaskHandler = async (data) => {
-    try {
-      const docRef = await addDoc(collection(db, 'tasks'), { title: `${data}` })
-      toast({
-        status: 'success',
-        title: 'A task has been successfully added',
-        description: 'Congratulations!',
-        isClosable: true,
-      })
-    } catch (error) {
-      setError('addTaskError', { shouldFocus: true })
-      toast({
-        status: 'error',
-        title: 'An error has occured',
-        description: `${error.message}`,
-        isClosable: true,
-      })
-    }
+  const showTodoInputHandler = (params) => {
+    setShowTodo((prevState) => !prevState)
   }
 
   return (
     <GridItem
-      as="form"
-      onSubmit={handleSubmit(onAddTaskHandler, onAddTaskErrorHandler)}
       pt={5}
       {...rest}
+      display="flex"
+      justifyContent="center"
+      alignItems="center"
+      flexDirection="column"
+      flexWrap="wrap"
     >
-      <FormControl>
-        <Flex>
-          <InputGroup>
-            <Input
-              id="title"
-              name="title"
-              placeholder="New Task"
-              mr={3}
-              color={{ color: useColorModeValue('black', 'white') }}
-              _placeholder={{ color: useColorModeValue('black', 'white') }}
-              {...register('title', { required: true })}
-            />
-          </InputGroup>
-          <Button type="submit">Add</Button>
-        </Flex>
-      </FormControl>
+      <Center mb={5}>
+        <Button
+          onClick={showTodoInputHandler}
+          width="40rem"
+          colorScheme="teal"
+          bgGradient="linear(to-r, teal.400, teal.500, teal.600)"
+        >
+          {showTodo ? 'Close Input' : 'Add Task'}
+        </Button>
+      </Center>
+      {showTodo ? <AddTodoInput /> : null}
+      <Divider my={5} />
     </GridItem>
   )
 }

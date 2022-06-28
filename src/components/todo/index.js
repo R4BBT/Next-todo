@@ -1,2 +1,5 @@
+export { AddTodoInput } from './add-todo-input'
 export { AddTodos } from './add-todos'
+export { FilterTodo } from './filter-todos'
+export { TodoListItem } from './view-todo-list'
 export { ViewTodos } from './view-todos'
