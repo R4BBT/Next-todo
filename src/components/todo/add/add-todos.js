@@ -5,7 +5,7 @@ import { AddTodoInput } from './add-todo-input'
 export const AddTodos = ({ ...rest }) => {
   const [showTodo, setShowTodo] = useState(false)
 
-  const showTodoInputHandler = (params) => {
+  const showTodoInputHandler = () => {
     setShowTodo((prevState) => !prevState)
   }
 

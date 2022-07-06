@@ -9,17 +9,21 @@ import {
 } from 'firebase/firestore'
 import { useEffect, useState } from 'react'
 import { db } from 'utils/configs/firebase-client'
+import { useAuth } from 'utils/contexts/auth-context'
 import { TodoListItem } from './view-todo-list'
 
 export const ViewTodos = ({ ...rest }) => {
   const [data, setData] = useState()
   const [isLoading, setIsLoading] = useState()
   const toast = useToast()
+  const { authenticated, user } = useAuth()
 
-  const userTaskCollectionReference = collection(db, 'todos/anonymous/tasks')
+  let userID = authenticated ? user.uid : 'anonymous'
+
+  const userTaskCollectionReference = collection(db, `todos/${userID}/tasks`)
   const userTaskQueryReference = query(
     userTaskCollectionReference,
-    orderBy('created_at'),
+    orderBy('createdAt'),
     limit(10)
   )
 
@@ -43,13 +47,12 @@ export const ViewTodos = ({ ...rest }) => {
         })
       }
     )
-
     setIsLoading(false)
 
     return () => {
       unsub()
     }
-  }, [])
+  }, [userID])
 
   return (
     <GridItem {...rest}>

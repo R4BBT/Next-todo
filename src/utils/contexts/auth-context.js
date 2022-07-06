@@ -13,8 +13,9 @@ import { clientAuth } from 'utils/configs/firebase-client'
 
 export const AuthContext = React.createContext({
   user: {},
-  loggedIn: false,
+  authenticated: false,
   loading: false,
+  setLoading: () => {},
   onEmailPasswordLogin: () => {},
   onGoogleLogin: () => {},
   onMicrosoftLogin: () => {},
@@ -189,6 +190,7 @@ export const AuthContextProvider = ({ children }) => {
   const value = {
     user,
     loading,
+    setLoading,
     authenticated,
     onEmailPasswordLogin,
     onGoogleLogin,
