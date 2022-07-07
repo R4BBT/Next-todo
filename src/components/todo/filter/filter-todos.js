@@ -1,6 +1,7 @@
-import { Box, Flex, GridItem, IconButton, Text } from '@chakra-ui/react'
+import { Box, Flex, GridItem, Text } from '@chakra-ui/react'
 import { IconContext } from 'react-icons'
-import { BiFilter, BiSortAlt2 } from 'react-icons/bi'
+import { FilterMenu } from './filter-menu'
+import { SortMenu } from './sort-menu'
 import { ViewMenu } from './view-menu'
 
 export const FilterTodo = ({ ...rest }) => {
@@ -20,8 +21,8 @@ export const FilterTodo = ({ ...rest }) => {
             display="flex"
             justifyContent="end"
           >
-            <IconButton icon={<BiSortAlt2 />} variant="ghost" />
-            <IconButton icon={<BiFilter />} variant="ghost" />
+            <SortMenu />
+            <FilterMenu />
           </Box>
         </Flex>
       </IconContext.Provider>

@@ -17,6 +17,13 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
 }
 
+// if (location.hostname === 'localhost') {
+//   const auth = getAuth()
+//   connectAuthEmulator(auth, 'http://localhost:9099')
+//   const db = getFirestore()
+//   connectFirestoreEmulator(db, 'localhost', 8080)
+// }
+
 let app = getApps()[0]
 
 // Initialize Firebase

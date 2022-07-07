@@ -8,6 +8,7 @@ import { ErrorBoundary } from 'components/error/error-boundary'
 import { Footer, Layout, Navbar } from 'components/page'
 import theme from 'styles/theme'
 import { AuthContextProvider } from 'utils/contexts/auth-context'
+import { TaskContextProvider } from 'utils/contexts/task-context'
 
 function MyApp({ Component, pageProps }) {
   const getLayout =
@@ -32,8 +33,10 @@ function MyApp({ Component, pageProps }) {
     <ErrorBoundary>
       <ChakraProvider theme={theme}>
         <AuthContextProvider>
-          <ColorModeScript initialColorMode={theme.config.initialColorMode} />
-          {getLayout(<Component {...pageProps} />)}
+          <TaskContextProvider>
+            <ColorModeScript initialColorMode={theme.config.initialColorMode} />
+            {getLayout(<Component {...pageProps} />)}
+          </TaskContextProvider>
         </AuthContextProvider>
       </ChakraProvider>
     </ErrorBoundary>

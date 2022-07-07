@@ -23,6 +23,7 @@ export const AddTodoInput = () => {
   const { handleSubmit, register, setError, setValue } = useForm({
     defaultValues: {
       important: false,
+      urgent: false,
     },
   })
 
@@ -62,7 +63,7 @@ export const AddTodoInput = () => {
         createdAt: serverTimestamp(),
         important: data.important,
         urgent: data.urgent,
-        // status: 'onboard' || 'In progress' || 'completed' || 'deleted' || 'Pending deletion'
+        status: 'incomplete',
         // actionDate:
         // dueDate:
         // categories:
