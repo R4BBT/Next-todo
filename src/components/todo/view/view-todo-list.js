@@ -6,26 +6,42 @@ import {
   IconButton,
   ListItem,
   SimpleGrid,
-  Text,
   useColorModeValue,
   useToast,
 } from '@chakra-ui/react'
-import { deleteDoc, doc } from 'firebase/firestore'
+import { deleteDoc, doc, serverTimestamp, updateDoc } from 'firebase/firestore'
 import {
   BsExclamationTriangleFill,
   BsHourglassSplit,
   BsXCircle,
 } from 'react-icons/bs'
-import { clientAuth, db } from 'utils/configs/firebase-client'
+import { db } from 'utils/configs/firebase-client'
+import { useAuth } from 'utils/contexts/auth-context'
+import { EditableTitle } from './editable-title'
 
 export const TodoListItem = ({ id, data }) => {
-  const { urgent, important, title } = data
+  const { urgent, important, title, status } = data
   const toast = useToast()
-  let userID = clientAuth.currentUser ? clientAuth.currentUser.uid : 'anonymous'
+  const activeColor = useColorModeValue('red', 'salmon')
+  const { authenticated, user } = useAuth()
 
+  let userID = authenticated ? user.uid : 'anonymous'
   const docRef = doc(db, `todos/${userID}/tasks/${id}`)
 
-  const ListItemOnClickHandler = () => {}
+  // Updating the document status to complete
+  const listItemOnClickHandler = () => {
+    if (status === 'incomplete') {
+      updateDoc(docRef, {
+        status: 'complete',
+        updatedAt: serverTimestamp(),
+      })
+    } else {
+      updateDoc(docRef, {
+        status: 'incomplete',
+        updatedAt: serverTimestamp(),
+      })
+    }
+  }
 
   // This is currently a hard delete, but will be looking into soft delete by changing status of task to deleted and offer restore options for 30 days
   const onDeleteHandler = async () => {
@@ -49,32 +65,36 @@ export const TodoListItem = ({ id, data }) => {
 
   return (
     <ListItem
-      onClick={ListItemOnClickHandler}
-      // textDecoration="line-through"
+    // onClick={ListItemOnClickHandler}
+    // textDecoration="line-through"
     >
       <SimpleGrid columns={2} row={1} alignItems="center">
         <HStack alignItems="center">
           <IconButton
             variant="ghost"
-            aria-label="close button"
+            aria-label="Mark as complete"
             _hover={{ bg: 'transparent', color: 'green' }}
             icon={<CheckCircleIcon />}
+            onClick={listItemOnClickHandler}
           />
-
-          <Text color={useColorModeValue('black', 'white')}>{title}</Text>
+          <EditableTitle title={title} status={status} docRef={docRef} />
+          {/* <Text
+            color={useColorModeValue('black', 'white')}
+            decoration={status === 'complete' ? 'line-through' : null}
+          >
+            {title}
+          </Text> */}
         </HStack>
 
         <Box display="flex" justifySelf="end">
           <HStack>
             {important ? (
-              <BsExclamationTriangleFill
-                color={useColorModeValue('red', 'salmon')}
-              />
+              <BsExclamationTriangleFill color={activeColor} />
             ) : (
               <BsExclamationTriangleFill />
             )}
             {urgent ? (
-              <BsHourglassSplit color={useColorModeValue('red', 'salmon')} />
+              <BsHourglassSplit color={activeColor} />
             ) : (
               <BsHourglassSplit />
             )}

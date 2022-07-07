@@ -27,6 +27,10 @@ export const AddTodoInput = () => {
     },
   })
 
+  // Color control
+  const inputColor = useColorModeValue('black', 'white')
+  const activeColor = useColorModeValue('red', 'salmon')
+
   // Button logic
   const [importantTask, setImportantTask] = useState(false)
   const importantIconClickHandler = () => {
@@ -57,7 +61,7 @@ export const AddTodoInput = () => {
   const onAddTaskHandler = async (data) => {
     console.log(data)
     try {
-      const docRef = await addDoc(tasksCollectionRef, {
+      await addDoc(tasksCollectionRef, {
         title: data.title,
         description: data.description,
         createdAt: serverTimestamp(),
@@ -68,6 +72,7 @@ export const AddTodoInput = () => {
         // dueDate:
         // categories:
       })
+      // returns const docRef
 
       toast({
         status: 'success',
@@ -105,7 +110,7 @@ export const AddTodoInput = () => {
             name="title"
             placeholder="New Task Title"
             mr={3}
-            color={{ color: useColorModeValue('black', 'white') }}
+            color={inputColor}
             // _placeholder={{ color: useColorModeValue('gray.400', 'gray.50') }}
             {...register('title', { required: true })}
           />
@@ -119,7 +124,7 @@ export const AddTodoInput = () => {
             name="description"
             placeholder="New Task Description"
             mr={3}
-            color={{ color: useColorModeValue('black', 'white') }}
+            color={inputColor}
             // _placeholder={{ color: useColorModeValue('gray.400', 'gray.50') }}
             {...register('description', { required: false })}
           />
@@ -131,11 +136,7 @@ export const AddTodoInput = () => {
           <IconButton
             icon={
               <BsFillExclamationTriangleFill
-                color={
-                  importantTask
-                    ? useColorModeValue('red', 'salmon')
-                    : useColorModeValue('black', 'white')
-                }
+                color={importantTask ? activeColor : inputColor}
               />
             }
             variant="outline"
@@ -145,13 +146,7 @@ export const AddTodoInput = () => {
         <Tooltip label="Urgent">
           <IconButton
             icon={
-              <BsHourglassSplit
-                color={
-                  urgentTask
-                    ? useColorModeValue('red', 'salmon')
-                    : useColorModeValue('black', 'white')
-                }
-              />
+              <BsHourglassSplit color={urgentTask ? activeColor : inputColor} />
             }
             variant="outline"
             onClick={urgentIconClickHandler}

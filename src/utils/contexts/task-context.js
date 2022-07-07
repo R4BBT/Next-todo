@@ -101,9 +101,10 @@ export const TaskContextProvider = ({ children }) => {
     return () => {
       unsub()
     }
-  }, [userID, sortField, sortDirection, filter])
+  }, [userID, sortField, sortDirection, filter, setLoading, toast])
 
-  // Adding data
+  // Adding data (Currently handled by component)
+  // Updating data
 
   // Returning Context Provider
   const value = {
