@@ -1,4 +1,4 @@
-import { Button, Center, Divider, GridItem } from '@chakra-ui/react'
+import { Button, Divider, GridItem } from '@chakra-ui/react'
 import { useState } from 'react'
 import { AddTodoInput } from './add-todo-input'
 
@@ -19,16 +19,16 @@ export const AddTodos = ({ ...rest }) => {
       flexDirection="column"
       flexWrap="wrap"
     >
-      <Center mb={5}>
-        <Button
-          onClick={showTodoInputHandler}
-          width="40rem"
-          colorScheme="teal"
-          bgGradient="linear(to-r, teal.400, teal.500, teal.600)"
-        >
-          {showTodo ? 'Close Input' : 'Add Task'}
-        </Button>
-      </Center>
+      <Button
+        mb={5}
+        width="100%"
+        maxWidth="40rem"
+        onClick={showTodoInputHandler}
+        colorScheme="teal"
+        bgGradient="linear(to-r, teal.400, teal.500, teal.600)"
+      >
+        {showTodo ? 'Close Input' : 'Add Task'}
+      </Button>
       {showTodo ? <AddTodoInput /> : null}
       <Divider my={5} />
     </GridItem>

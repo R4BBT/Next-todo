@@ -11,27 +11,45 @@ import {
   useToast,
 } from '@chakra-ui/react'
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { BsFillExclamationTriangleFill, BsHourglassSplit } from 'react-icons/bs'
 import { TbCalendarTime } from 'react-icons/tb'
 import { clientAuth, db } from 'utils/configs/firebase-client'
+import { useFormReset } from 'utils/hooks'
 
 export const AddTodoInput = () => {
   // Initialize component
   const toast = useToast()
-  const { handleSubmit, register, setError, setValue } = useForm({
+  const { handleSubmit, register, setError, setValue, formState } = useForm({
     defaultValues: {
+      title: '',
+      description: '',
+      createdAt: null,
       important: false,
       urgent: false,
+      status: 'incomplete',
     },
   })
+  useFormReset()
+
+  useEffect(() => {
+    if (formState.isSubmitSuccessful) {
+      console.log('Submit Successful')
+    }
+    if (formState.isSubmitted) {
+      console.log('Submitted')
+    }
+    if (formState.isSubmitting) {
+      console.log('Submitting')
+    }
+  }, [formState])
 
   // Color control
   const inputColor = useColorModeValue('black', 'white')
   const activeColor = useColorModeValue('red', 'salmon')
 
-  // Button logic
+  // Buttons logic
   const [importantTask, setImportantTask] = useState(false)
   const importantIconClickHandler = () => {
     if (importantTask) {
@@ -42,7 +60,6 @@ export const AddTodoInput = () => {
       setImportantTask(true)
     }
   }
-
   const [urgentTask, setUrgentTask] = useState(false)
   const urgentIconClickHandler = () => {
     if (urgentTask) {
@@ -59,8 +76,8 @@ export const AddTodoInput = () => {
 
   const tasksCollectionRef = collection(db, 'todos', userID, 'tasks')
   const onAddTaskHandler = async (data) => {
-    console.log(data)
     try {
+      // returns const docRef
       await addDoc(tasksCollectionRef, {
         title: data.title,
         description: data.description,
@@ -72,7 +89,6 @@ export const AddTodoInput = () => {
         // dueDate:
         // categories:
       })
-      // returns const docRef
 
       toast({
         status: 'success',
@@ -99,7 +115,8 @@ export const AddTodoInput = () => {
       onSubmit={handleSubmit(onAddTaskHandler, onAddTaskErrorHandler)}
       gridColumn={2}
       gridAutoRows="auto"
-      width="container.md"
+      width="100%"
+      maxWidth="container.md"
       justifyItems="center"
       gap={3}
     >
@@ -157,7 +174,13 @@ export const AddTodoInput = () => {
         </Tooltip>
       </GridItem>
 
-      <Button type="submit" ml={5} colorScheme="red" width="20rem">
+      <Button
+        type="submit"
+        ml={5}
+        colorScheme="red"
+        width="100%"
+        maxWidth="20rem"
+      >
         Add task
       </Button>
     </SimpleGrid>
