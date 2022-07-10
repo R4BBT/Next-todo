@@ -1,7 +1,7 @@
 import { CheckCircleIcon } from '@chakra-ui/icons'
 import {
   Box,
-  Button,
+  Flex,
   HStack,
   IconButton,
   ListItem,
@@ -17,14 +17,26 @@ import {
 } from 'react-icons/bs'
 import { db } from 'utils/configs/firebase-client'
 import { useAuth } from 'utils/contexts/auth-context'
-import { EditableTitle } from './editable-title'
+import { EditableTitle } from './editable-display'
 
 export const TodoListItem = ({ id, data }) => {
-  const { urgent, important, title, status } = data
+  // Initializing
+  const {
+    urgent,
+    important,
+    title,
+    status,
+    description,
+    createdAt,
+    updatedAt,
+  } = data
   const toast = useToast()
+  const inputColor = useColorModeValue('black', 'white')
   const activeColor = useColorModeValue('red', 'salmon')
+  const completedColor = useColorModeValue('green', 'green.500')
   const { authenticated, user } = useAuth()
 
+  // Document reference
   let userID = authenticated ? user.uid : 'anonymous'
   const docRef = doc(db, `todos/${userID}/tasks/${id}`)
 
@@ -69,22 +81,26 @@ export const TodoListItem = ({ id, data }) => {
     // textDecoration="line-through"
     >
       <SimpleGrid columns={2} row={1} alignItems="center">
-        <HStack alignItems="center">
+        <Flex alignItems="center">
           <IconButton
             variant="ghost"
             aria-label="Mark as complete"
-            _hover={{ bg: 'transparent', color: 'green' }}
+            color={status === 'complete' ? completedColor : inputColor}
+            _hover={{ bg: 'transparent', color: completedColor }}
             icon={<CheckCircleIcon />}
             onClick={listItemOnClickHandler}
           />
-          <EditableTitle title={title} status={status} docRef={docRef} />
-          {/* <Text
-            color={useColorModeValue('black', 'white')}
-            decoration={status === 'complete' ? 'line-through' : null}
-          >
-            {title}
-          </Text> */}
-        </HStack>
+          <EditableTitle
+            title={title}
+            status={status}
+            docRef={docRef}
+            description={description}
+            urgent={urgent}
+            important={important}
+            createdAt={createdAt}
+            updatedAt={updatedAt}
+          />
+        </Flex>
 
         <Box display="flex" justifySelf="end">
           <HStack>
@@ -99,10 +115,6 @@ export const TodoListItem = ({ id, data }) => {
               <BsHourglassSplit />
             )}
           </HStack>
-
-          <Button mx={2} display="none">
-            Update
-          </Button>
 
           <IconButton
             icon={<BsXCircle />}
