@@ -1,4 +1,4 @@
-import { Box, Flex, GridItem, Text } from '@chakra-ui/react'
+import { Box, GridItem, SimpleGrid, Text } from '@chakra-ui/react'
 import { IconContext } from 'react-icons'
 import { FilterMenu } from './filter-menu'
 import { SortMenu } from './sort-menu'
@@ -8,23 +8,18 @@ export const FilterTodo = ({ ...rest }) => {
   return (
     <GridItem pt={5} {...rest}>
       <IconContext.Provider value={{ size: '1.5rem' }}>
-        <Flex justifyContent="space-between" alignItems="center">
-          <Box flexBasis="auto" flexGrow={1}>
+        <SimpleGrid gridTemplateColumns="1fr 1fr 1fr" alignItems="center">
+          <Box justifySelf="start">
             <ViewMenu />
           </Box>
-          <Text as="h1" fontSize="xl" fontWeight="bold">
+          <Text as="h1" fontSize="xl" fontWeight="bold" justifySelf="center">
             Tasks
           </Text>
-          <Box
-            flexBasis="auto"
-            flexGrow={1}
-            display="flex"
-            justifyContent="end"
-          >
+          <Box display="flex" justifyContent="end">
             <SortMenu />
             <FilterMenu />
           </Box>
-        </Flex>
+        </SimpleGrid>
       </IconContext.Provider>
     </GridItem>
   )

@@ -102,60 +102,48 @@ export const Navbar = () => {
         </GridItem>
 
         <GridItem w="100%">
-          <Flex
-            spacing={3}
-            display={{ base: 'none', md: 'flex' }}
-            justifyContent="flex-end"
-            alignItems="center"
-          >
-            <Tooltip
-              shouldWrapChildren
-              closeOnClick
-              isDisabled={authenticated}
-              label="This is a member feature"
-              mt={3}
-              hasArrow
-              arrowSize={15}
-              aria-label="This is a member feature"
-            >
-              <Link href="/dashboard" passHref>
+          <Flex spacing={3} justifyContent="flex-end" alignItems="center">
+            <Box display={{ base: 'none', md: 'flex' }}>
+              <Tooltip
+                shouldWrapChildren
+                closeOnClick
+                isDisabled={authenticated}
+                label="This is a member feature"
+                mt={3}
+                hasArrow
+                arrowSize={15}
+                aria-label="This is a member feature"
+              >
+                <Link href="/dashboard" passHref>
+                  <IconButton
+                    icon={<MdDashboardCustomize />}
+                    variant="ghost"
+                    _hover={{ bg: 'lightblue' }}
+                    aria-label="Dashboard"
+                    disabled={!authenticated}
+                  />
+                </Link>
+              </Tooltip>
+
+              {colorMode === 'light' ? (
                 <IconButton
-                  icon={<MdDashboardCustomize />}
+                  icon={<IoIosSunny />}
+                  color="black"
                   variant="ghost"
-                  _hover={{ bg: 'lightblue' }}
-                  aria-label="Dashboard"
-                  disabled={!authenticated}
+                  onClick={toggleColorMode}
+                  aria-label="Toggle dark mode"
                 />
-              </Link>
-            </Tooltip>
+              ) : (
+                <IconButton
+                  icon={<IoMdMoon />}
+                  color="white"
+                  variant="ghost"
+                  onClick={toggleColorMode}
+                  aria-label="Toggle light mode"
+                />
+              )}
+            </Box>
 
-            {/* <Link href="/listings" passHref>
-              <IconButton
-                icon={<IoIosMap />}
-                // color
-                variant="ghost"
-                _hover={{ bg: 'lightblue' }}
-                aria-label="Listings"
-              />
-            </Link> */}
-
-            {colorMode === 'light' ? (
-              <IconButton
-                icon={<IoIosSunny />}
-                color="black"
-                variant="ghost"
-                onClick={toggleColorMode}
-                aria-label="Toggle dark mode"
-              />
-            ) : (
-              <IconButton
-                icon={<IoMdMoon />}
-                color="white"
-                variant="ghost"
-                onClick={toggleColorMode}
-                aria-label="Toggle light mode"
-              />
-            )}
             <Menu>
               <MenuButton
                 // py={2} // Do not use Py this causes an issue with scroll and popper
@@ -170,10 +158,10 @@ export const Navbar = () => {
                     bg="gray.400"
                   />
                   <VStack
-                    display={{ base: 'none', md: 'flex' }}
                     alignItems="flex-start"
                     spacing="1px"
                     ml={2}
+                    display={{ base: 'none', md: 'flex' }}
                   >
                     <Text fontSize="sm">{name ? name : 'Username'}</Text>
                     <Text fontSize="xs" color="gray.600">

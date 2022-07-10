@@ -11,7 +11,9 @@ import { FaRegListAlt } from 'react-icons/fa'
 export const ViewMenu = () => {
   return (
     <Menu isLazy>
-      <MenuButton fontWeight="semibold">View</MenuButton>
+      <MenuButton fontWeight="semibold" fontSize="md">
+        View
+      </MenuButton>
       <MenuList>
         <MenuItem>
           <HStack>
