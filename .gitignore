@@ -37,3 +37,6 @@ key.json
 
 # Logs
 *.log
+
+# Firestore rules
+firestore.rules
