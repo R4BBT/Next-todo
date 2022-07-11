@@ -31,7 +31,7 @@ export const SortMenu = () => {
           </MenuItemOption>
         </MenuOptionGroup>
         <MenuDivider />
-        <MenuOptionGroup defaultValue="createdAt" title="Field" type="radio">
+        <MenuOptionGroup defaultValue="createdAt" title="Sort by" type="radio">
           <MenuItemOption
             value="createdAt"
             onClick={() => setSortField('createdAt')}
@@ -51,6 +51,13 @@ export const SortMenu = () => {
             isDisabled={filter.urgent}
           >
             Urgent Tasks
+          </MenuItemOption>
+          <MenuItemOption
+            value="complete"
+            onClick={() => setSortField('status')}
+            isDisabled={!filter.all}
+          >
+            Completed
           </MenuItemOption>
         </MenuOptionGroup>
       </MenuList>

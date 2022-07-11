@@ -9,11 +9,17 @@ import {
   Text,
 } from '@chakra-ui/react'
 import { BiFilter } from 'react-icons/bi'
-import { BsExclamationTriangleFill, BsHourglassSplit } from 'react-icons/bs'
+import {
+  BsEmojiSunglasses,
+  BsExclamationTriangleFill,
+  BsHourglassSplit,
+} from 'react-icons/bs'
+import { IoCheckmarkDoneOutline } from 'react-icons/io5'
+
 import { useTask } from 'utils/contexts/task-context'
 
 export const FilterMenu = () => {
-  const { sortField, setFilter } = useTask()
+  const { sortField, filter, setFilter } = useTask()
 
   return (
     <Menu closeOnSelect={false}>
@@ -35,6 +41,7 @@ export const FilterMenu = () => {
               <Text>Important</Text>
             </HStack>
           </MenuItemOption>
+
           <MenuItemOption
             value="urgent"
             onClick={() =>
@@ -48,6 +55,37 @@ export const FilterMenu = () => {
             <HStack>
               <BsHourglassSplit />
               <Text>Urgent</Text>
+            </HStack>
+          </MenuItemOption>
+
+          <MenuItemOption
+            value="complete"
+            onClick={() =>
+              setFilter((prevState) => ({
+                ...prevState,
+                complete: !prevState.complete,
+              }))
+            }
+            isDisabled={filter.all === true}
+          >
+            <HStack>
+              <IoCheckmarkDoneOutline />
+              <Text>Completed</Text>
+            </HStack>
+          </MenuItemOption>
+
+          <MenuItemOption
+            value="all"
+            onClick={() =>
+              setFilter((prevState) => ({
+                ...prevState,
+                all: !prevState.all,
+              }))
+            }
+          >
+            <HStack>
+              <BsEmojiSunglasses />
+              <Text>All Tasks</Text>
             </HStack>
           </MenuItemOption>
         </MenuOptionGroup>
