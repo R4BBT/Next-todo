@@ -1,6 +1,11 @@
 import { SimpleGrid } from '@chakra-ui/react'
 import { Title } from 'components/page'
-import { AddTodos, FilterTodo, ViewTodos } from 'components/todo'
+import {
+  AddTodos,
+  FilterTodos,
+  PaginateTodos,
+  ViewTodos,
+} from 'components/todo'
 
 // TODO
 // Generate a list of todos
@@ -12,10 +17,11 @@ const Home = () => {
   return (
     <>
       <Title title="Todo Application" />
-      <SimpleGrid gridTemplateColumns="1fr" gridTemplateRows="auto auto auto">
+      <SimpleGrid gridTemplateColumns="1fr" gridAutoRows="auto">
         <AddTodos colSpan={1} />
-        <FilterTodo colSpan={1} />
+        <FilterTodos colSpan={1} />
         <ViewTodos colSpan={1} />
+        <PaginateTodos colSpan={1} />
       </SimpleGrid>
     </>
   )

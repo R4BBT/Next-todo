@@ -1,3 +1,4 @@
 export { AddTodos } from './add'
-export { FilterTodo } from './filter'
+export { FilterTodos } from './filter'
+export { PaginateTodos } from './paginate'
 export { TodoListItem, ViewTodos } from './view'
