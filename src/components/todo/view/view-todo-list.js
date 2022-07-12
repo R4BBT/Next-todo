@@ -80,7 +80,7 @@ export const TodoListItem = ({ id, data }) => {
     // onClick={ListItemOnClickHandler}
     // textDecoration="line-through"
     >
-      <SimpleGrid columns={2} row={1} alignItems="center">
+      <SimpleGrid gridTemplateColumns="auto auto" row={1} alignItems="center">
         <Flex alignItems="center">
           <IconButton
             variant="ghost"

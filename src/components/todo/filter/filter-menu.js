@@ -76,6 +76,7 @@ export const FilterMenu = () => {
 
           <MenuItemOption
             value="all"
+            isDisabled={filter.complete === true}
             onClick={() =>
               setFilter((prevState) => ({
                 ...prevState,

@@ -64,7 +64,10 @@ export const EditableTitle = ({
   // Main component return statement
   return (
     <>
-      <Text textDecoration={status === 'complete' ? 'line-through' : null}>
+      <Text
+        textDecoration={status === 'complete' ? 'line-through' : null}
+        noOfLines={1}
+      >
         {title}
       </Text>
 
