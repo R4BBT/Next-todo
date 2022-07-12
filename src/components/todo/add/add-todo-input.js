@@ -11,7 +11,7 @@ import {
   useToast,
 } from '@chakra-ui/react'
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { BsFillExclamationTriangleFill, BsHourglassSplit } from 'react-icons/bs'
 import { TbCalendarTime } from 'react-icons/tb'
@@ -21,7 +21,7 @@ import { useFormReset } from 'utils/hooks'
 export const AddTodoInput = () => {
   // Initialize component
   const toast = useToast()
-  const { handleSubmit, register, setError, setValue, formState } = useForm({
+  const { handleSubmit, register, setError, setValue } = useForm({
     defaultValues: {
       title: '',
       description: '',
@@ -33,17 +33,18 @@ export const AddTodoInput = () => {
   })
   useFormReset()
 
-  useEffect(() => {
-    if (formState.isSubmitSuccessful) {
-      console.log('Submit Successful')
-    }
-    if (formState.isSubmitted) {
-      console.log('Submitted')
-    }
-    if (formState.isSubmitting) {
-      console.log('Submitting')
-    }
-  }, [formState])
+  // For testing FormReset, can be deleted. Remeber to import useEffect() and formState in useForm()
+  // useEffect(() => {
+  //   if (formState.isSubmitSuccessful) {
+  //     console.log('Submit Successful')
+  //   }
+  //   if (formState.isSubmitted) {
+  //     console.log('Submitted')
+  //   }
+  //   if (formState.isSubmitting) {
+  //     console.log('Submitting')
+  //   }
+  // }, [formState])
 
   // Color control
   const inputColor = useColorModeValue('black', 'white')
@@ -74,6 +75,9 @@ export const AddTodoInput = () => {
   // Controller logic
   let userID = clientAuth.currentUser ? clientAuth.currentUser.uid : 'anonymous'
 
+  // For adding pageCounter later on
+  // const userDocRef = doc(db, 'todos', userID)
+
   const tasksCollectionRef = collection(db, 'todos', userID, 'tasks')
   const onAddTaskHandler = async (data) => {
     try {
@@ -82,6 +86,7 @@ export const AddTodoInput = () => {
         title: data.title,
         description: data.description,
         createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
         important: data.important,
         urgent: data.urgent,
         status: 'incomplete',
