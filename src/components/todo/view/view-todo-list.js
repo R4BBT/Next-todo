@@ -17,7 +17,7 @@ import {
 } from 'react-icons/bs'
 import { db } from 'utils/configs/firebase-client'
 import { useAuth } from 'utils/contexts/auth-context'
-import { EditableTitle } from './editable-display'
+import { EditableTitle } from './editable-title'
 
 export const TodoListItem = ({ id, data }) => {
   // Initializing

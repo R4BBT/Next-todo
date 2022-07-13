@@ -30,7 +30,7 @@ const TextInput = forwardRef((props, ref) => {
 TextInput.displayName = 'TextInput'
 
 // Form component
-export const Form = ({
+export const UpdateForm = ({
   docRef,
   firstFieldRef,
   onCancel,
@@ -88,7 +88,7 @@ export const Form = ({
       await updateDoc(docRef, {
         title: data.title,
         description: data.description,
-        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
         important: data.important,
         urgent: data.urgent,
       })
