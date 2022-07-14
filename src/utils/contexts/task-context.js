@@ -7,7 +7,7 @@ import {
   query,
   where,
 } from 'firebase/firestore'
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { db } from 'utils/configs/firebase-client'
 import { useAuth } from './auth-context'
 
@@ -37,183 +37,40 @@ export const TaskContextProvider = ({ children }) => {
     all: false,
   })
 
+  // const paginate = useState(false)
+  const lastDocumentRef = useRef()
+
   let userID = authenticated ? user.uid : 'anonymous'
+  const userTaskCollectionReference = collection(db, `todos/${userID}/tasks`)
 
   // Getting data
   useEffect(() => {
     setLoading(true)
 
-    // Sorting logic
-    const userTaskCollectionReference = collection(db, `todos/${userID}/tasks`)
-    let userTaskQueryReference
+    // Defining the query constraints
+    const queryConstraints = []
 
-    // All tasks
-    if (
-      filter.important === true &&
-      filter.urgent === false &&
-      filter.all === true
-    ) {
-      userTaskQueryReference = query(
-        userTaskCollectionReference,
-        orderBy(sortField, sortDirection),
-        where('important', '==', true),
-        limit(10)
-      )
+    if (filter.important === true) {
+      queryConstraints.push(where('important', '==', true))
     }
-
-    if (
-      filter.important === true &&
-      filter.urgent === true &&
-      filter.all === true
-    ) {
-      userTaskQueryReference = query(
-        userTaskCollectionReference,
-        orderBy(sortField, sortDirection),
-        where('important', '==', true),
-        where('urgent', '==', true),
-        limit(10)
-      )
+    if (filter.urgent === true) {
+      queryConstraints.push(where('urgent', '==', true))
+    }
+    if (filter.all === false) {
+      if (filter.complete === true) {
+        queryConstraints.push(where('status', '==', 'complete'))
+      } else {
+        queryConstraints.push(where('status', '==', 'incomplete'))
+      }
     }
 
-    if (
-      filter.important === false &&
-      filter.urgent === true &&
-      filter.all === true
-    ) {
-      userTaskQueryReference = query(
-        userTaskCollectionReference,
-        orderBy(sortField, sortDirection),
-        where('urgent', '==', true),
-        limit(10)
-      )
-    }
-    if (
-      filter.important === false &&
-      filter.urgent === false &&
-      filter.all === true
-    ) {
-      userTaskQueryReference = query(
-        userTaskCollectionReference,
-        orderBy(sortField, sortDirection),
-        limit(10)
-      )
-    }
-
-    // Incomplete Filter
-    if (
-      filter.important === true &&
-      filter.urgent === false &&
-      filter.complete === false &&
-      filter.all === false
-    ) {
-      userTaskQueryReference = query(
-        userTaskCollectionReference,
-        orderBy(sortField, sortDirection),
-        limit(10),
-        where('important', '==', true),
-        where('status', '==', 'incomplete')
-      )
-    }
-    if (
-      filter.important === true &&
-      filter.urgent === true &&
-      filter.complete === false &&
-      filter.all === false
-    ) {
-      userTaskQueryReference = query(
-        userTaskCollectionReference,
-        orderBy(sortField, sortDirection),
-        limit(10),
-        where('important', '==', true),
-        where('urgent', '==', true),
-        where('status', '==', 'incomplete')
-      )
-    }
-    if (
-      filter.important === false &&
-      filter.urgent === true &&
-      filter.complete === false &&
-      filter.all === false
-    ) {
-      userTaskQueryReference = query(
-        userTaskCollectionReference,
-        orderBy(sortField, sortDirection),
-        limit(10),
-        where('urgent', '==', true),
-        where('status', '==', 'incomplete')
-      )
-    }
-    if (
-      filter.important === false &&
-      filter.urgent === false &&
-      filter.complete === false &&
-      filter.all === false
-    ) {
-      userTaskQueryReference = query(
-        userTaskCollectionReference,
-        orderBy(sortField, sortDirection),
-        limit(10),
-        where('status', '==', 'incomplete')
-      )
-    }
-
-    // Complete Filter
-    if (
-      filter.important === true &&
-      filter.urgent === false &&
-      filter.complete === true &&
-      filter.all === false
-    ) {
-      userTaskQueryReference = query(
-        userTaskCollectionReference,
-        orderBy(sortField, sortDirection),
-        limit(10),
-        where('important', '==', true),
-        where('status', '==', 'complete')
-      )
-    }
-    if (
-      filter.important === true &&
-      filter.urgent === true &&
-      filter.complete === true &&
-      filter.all === false
-    ) {
-      userTaskQueryReference = query(
-        userTaskCollectionReference,
-        orderBy(sortField, sortDirection),
-        limit(10),
-        where('important', '==', true),
-        where('urgent', '==', true),
-        where('status', '==', 'complete')
-      )
-    }
-    if (
-      filter.important === false &&
-      filter.urgent === true &&
-      filter.complete === true &&
-      filter.all === false
-    ) {
-      userTaskQueryReference = query(
-        userTaskCollectionReference,
-        orderBy(sortField, sortDirection),
-        limit(10),
-        where('urgent', '==', true),
-        where('status', '==', 'complete')
-      )
-    }
-    if (
-      filter.important === false &&
-      filter.urgent === false &&
-      filter.complete === true &&
-      filter.all === false
-    ) {
-      userTaskQueryReference = query(
-        userTaskCollectionReference,
-        orderBy(sortField, sortDirection),
-        limit(10),
-        where('status', '==', 'complete')
-      )
-    }
+    // Building the query
+    const userTaskQueryReference = query(
+      userTaskCollectionReference,
+      orderBy(sortField, sortDirection),
+      limit(10),
+      ...queryConstraints
+    )
 
     // Snapshot logic
     const unsub = onSnapshot(
@@ -227,6 +84,10 @@ export const TaskContextProvider = ({ children }) => {
         querySnapshot.forEach(
           (doc) => tasks.push({ id: doc.id, ...doc.data() }) //doc.data() does not include id
         )
+        // Find the last document
+        const lastDocument = querySnapshot.docs[querySnapshot.docs.length - 1]
+        lastDocumentRef.current = lastDocument
+
         setData(tasks)
       },
       (error) => {
@@ -245,7 +106,15 @@ export const TaskContextProvider = ({ children }) => {
     return () => {
       unsub()
     }
-  }, [userID, sortField, sortDirection, filter, setLoading, toast])
+  }, [
+    userID,
+    sortField,
+    sortDirection,
+    filter,
+    setLoading,
+    toast,
+    userTaskCollectionReference,
+  ])
 
   // Adding data (Currently handled by component)
 
