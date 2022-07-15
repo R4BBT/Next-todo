@@ -7,7 +7,7 @@ import {
   query,
   where,
 } from 'firebase/firestore'
-import { createContext, useContext, useEffect, useRef, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { db } from 'utils/configs/firebase-client'
 import { useAuth } from './auth-context'
 
@@ -18,7 +18,6 @@ export const TaskContext = createContext({
   sortField: '',
   setSortField: () => {},
   setSortDirection: () => {},
-  // updateTask: () => {},
 })
 
 export const useTask = () => useContext(TaskContext)
@@ -36,9 +35,6 @@ export const TaskContextProvider = ({ children }) => {
     complete: false,
     all: false,
   })
-
-  // const paginate = useState(false)
-  const lastDocumentRef = useRef()
 
   let userID = authenticated ? user.uid : 'anonymous'
   const userTaskCollectionReference = collection(db, `todos/${userID}/tasks`)
@@ -84,10 +80,6 @@ export const TaskContextProvider = ({ children }) => {
         querySnapshot.forEach(
           (doc) => tasks.push({ id: doc.id, ...doc.data() }) //doc.data() does not include id
         )
-        // Find the last document
-        const lastDocument = querySnapshot.docs[querySnapshot.docs.length - 1]
-        lastDocumentRef.current = lastDocument
-
         setData(tasks)
       },
       (error) => {
@@ -116,28 +108,6 @@ export const TaskContextProvider = ({ children }) => {
     userTaskCollectionReference,
   ])
 
-  // Adding data (Currently handled by component)
-
-  // Updating data (Not used atm)
-  // const updateTask = async (docRef, title, description, important, urgent) => {
-  //   try {
-  //     await updateDoc(docRef, {
-  //       title: title,
-  //       description: description,
-  //       updatedAt: serverTimestamp(),
-  //       important,
-  //       urgent,
-  //     })
-  //   } catch (error) {
-  //     toast({
-  //       status: 'error',
-  //       title: 'An error has occured',
-  //       description: `${error.message}`,
-  //       isClosable: true,
-  //     })
-  //   }
-  // }
-
   // Returning Context Provider
   const value = {
     data,
@@ -146,7 +116,6 @@ export const TaskContextProvider = ({ children }) => {
     sortField,
     setSortField,
     setSortDirection,
-    // updateTask,
   }
   return <TaskContext.Provider value={value}>{children}</TaskContext.Provider>
 }
