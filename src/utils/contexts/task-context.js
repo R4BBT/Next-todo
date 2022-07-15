@@ -1,7 +1,6 @@
 import { useToast } from '@chakra-ui/react'
 import {
   collection,
-  limit,
   onSnapshot,
   orderBy,
   query,
@@ -18,6 +17,12 @@ export const TaskContext = createContext({
   sortField: '',
   setSortField: () => {},
   setSortDirection: () => {},
+  pageLimit: Number,
+  totalItems: Number,
+  lastPageSize: Number,
+  numberOfFullPages: Number,
+  pageSet: Number,
+  setPageSet: Function,
 })
 
 export const useTask = () => useContext(TaskContext)
@@ -36,16 +41,21 @@ export const TaskContextProvider = ({ children }) => {
     all: false,
   })
 
-  let userID = authenticated ? user.uid : 'anonymous'
-  const userTaskCollectionReference = collection(db, `todos/${userID}/tasks`)
+  // Pagination
+  const pageLimit = 10
+  const [pageSet, setPageSet] = useState(0)
+  const [totalItems, setTotalItems] = useState(0)
+  const [lastPageSize, setLastPageSize] = useState(0)
+  const [numberOfFullPages, setNumberOfFullPages] = useState(0)
 
   // Getting data
   useEffect(() => {
     setLoading(true)
+    let userID = authenticated ? user.uid : 'anonymous'
+    const userTaskCollectionReference = collection(db, `todos/${userID}/tasks`)
 
     // Defining the query constraints
     const queryConstraints = []
-
     if (filter.important === true) {
       queryConstraints.push(where('important', '==', true))
     }
@@ -64,7 +74,6 @@ export const TaskContextProvider = ({ children }) => {
     const userTaskQueryReference = query(
       userTaskCollectionReference,
       orderBy(sortField, sortDirection),
-      limit(10),
       ...queryConstraints
     )
 
@@ -75,12 +84,21 @@ export const TaskContextProvider = ({ children }) => {
         const tasks = []
         if (querySnapshot.empty) {
           setData(tasks)
+          setPageSet(0)
+          setTotalItems(0)
+          setLastPageSize(0)
+          setNumberOfFullPages(0)
           return
+        } else {
+          querySnapshot.forEach(
+            (doc) => tasks.push({ id: doc.id, ...doc.data() }) //doc.data() does not include id
+          )
+          setData(tasks)
+          setPageSet(0)
+          setTotalItems(querySnapshot.size)
+          setLastPageSize(querySnapshot.size % pageLimit)
+          setNumberOfFullPages(Math.floor(querySnapshot.size / pageLimit))
         }
-        querySnapshot.forEach(
-          (doc) => tasks.push({ id: doc.id, ...doc.data() }) //doc.data() does not include id
-        )
-        setData(tasks)
       },
       (error) => {
         unsub()
@@ -98,15 +116,7 @@ export const TaskContextProvider = ({ children }) => {
     return () => {
       unsub()
     }
-  }, [
-    userID,
-    sortField,
-    sortDirection,
-    filter,
-    setLoading,
-    toast,
-    userTaskCollectionReference,
-  ])
+  }, [sortField, sortDirection, filter, setLoading, toast, authenticated, user])
 
   // Returning Context Provider
   const value = {
@@ -116,6 +126,12 @@ export const TaskContextProvider = ({ children }) => {
     sortField,
     setSortField,
     setSortDirection,
+    pageLimit,
+    totalItems,
+    lastPageSize,
+    numberOfFullPages,
+    pageSet,
+    setPageSet,
   }
   return <TaskContext.Provider value={value}>{children}</TaskContext.Provider>
 }

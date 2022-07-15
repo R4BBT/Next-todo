@@ -60,6 +60,7 @@ export const EditableTitle = ({
       </Popover>
 
       <Popover
+        isLazy
         isOpen={isOpen}
         initialFocusRef={firstFieldRef}
         onOpen={onOpen}
