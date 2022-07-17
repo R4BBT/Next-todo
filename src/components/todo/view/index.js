@@ -1,4 +1,5 @@
 export { EditableTitle } from './editable-title'
+export { PaginateTodos } from './paginate-todos'
 export { PopoverDisplay } from './popover-display'
 export { UpdateForm } from './update-form'
 export { TodoListItem } from './view-todo-list'

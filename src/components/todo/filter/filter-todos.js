@@ -4,7 +4,7 @@ import { FilterMenu } from './filter-menu'
 import { SortMenu } from './sort-menu'
 import { ViewMenu } from './view-menu'
 
-export const FilterTodo = ({ ...rest }) => {
+export const FilterTodos = ({ ...rest }) => {
   return (
     <GridItem pt={5} {...rest}>
       <IconContext.Provider value={{ size: '1.5rem' }}>

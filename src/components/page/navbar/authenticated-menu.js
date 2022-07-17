@@ -28,30 +28,6 @@ export const AuthenticatedMenu = () => {
             </HStack>
           </MenuItem>
         </Link>
-        <Link href="/account" passHref>
-          <MenuItem>
-            <HStack>
-              <GoGear />
-              <Text>Account</Text>
-            </HStack>
-          </MenuItem>
-        </Link>
-        <Link href="/account" passHref>
-          <MenuItem>
-            <HStack>
-              <GoGear />
-              <Text>Account</Text>
-            </HStack>
-          </MenuItem>
-        </Link>
-        <Link href="/account" passHref>
-          <MenuItem>
-            <HStack>
-              <GoGear />
-              <Text>Account</Text>
-            </HStack>
-          </MenuItem>
-        </Link>
       </MenuGroup>
       <MenuDivider />
       <MenuGroup>

@@ -1,7 +1,6 @@
 import { useToast } from '@chakra-ui/react'
 import {
   collection,
-  limit,
   onSnapshot,
   orderBy,
   query,
@@ -18,7 +17,12 @@ export const TaskContext = createContext({
   sortField: '',
   setSortField: () => {},
   setSortDirection: () => {},
-  // updateTask: () => {},
+  pageLimit: Number,
+  totalItems: Number,
+  lastPageSize: Number,
+  numberOfFullPages: Number,
+  pageSet: Number,
+  setPageSet: Function,
 })
 
 export const useTask = () => useContext(TaskContext)
@@ -37,183 +41,41 @@ export const TaskContextProvider = ({ children }) => {
     all: false,
   })
 
-  let userID = authenticated ? user.uid : 'anonymous'
+  // Pagination
+  const pageLimit = 10
+  const [pageSet, setPageSet] = useState(0)
+  const [totalItems, setTotalItems] = useState(0)
+  const [lastPageSize, setLastPageSize] = useState(0)
+  const [numberOfFullPages, setNumberOfFullPages] = useState(0)
 
   // Getting data
   useEffect(() => {
     setLoading(true)
-
-    // Sorting logic
+    let userID = authenticated ? user.uid : 'anonymous'
     const userTaskCollectionReference = collection(db, `todos/${userID}/tasks`)
-    let userTaskQueryReference
 
-    // All tasks
-    if (
-      filter.important === true &&
-      filter.urgent === false &&
-      filter.all === true
-    ) {
-      userTaskQueryReference = query(
-        userTaskCollectionReference,
-        orderBy(sortField, sortDirection),
-        where('important', '==', true),
-        limit(10)
-      )
+    // Defining the query constraints
+    const queryConstraints = []
+    if (filter.important === true) {
+      queryConstraints.push(where('important', '==', true))
     }
-
-    if (
-      filter.important === true &&
-      filter.urgent === true &&
-      filter.all === true
-    ) {
-      userTaskQueryReference = query(
-        userTaskCollectionReference,
-        orderBy(sortField, sortDirection),
-        where('important', '==', true),
-        where('urgent', '==', true),
-        limit(10)
-      )
+    if (filter.urgent === true) {
+      queryConstraints.push(where('urgent', '==', true))
+    }
+    if (filter.all === false) {
+      if (filter.complete === true) {
+        queryConstraints.push(where('status', '==', 'complete'))
+      } else {
+        queryConstraints.push(where('status', '==', 'incomplete'))
+      }
     }
 
-    if (
-      filter.important === false &&
-      filter.urgent === true &&
-      filter.all === true
-    ) {
-      userTaskQueryReference = query(
-        userTaskCollectionReference,
-        orderBy(sortField, sortDirection),
-        where('urgent', '==', true),
-        limit(10)
-      )
-    }
-    if (
-      filter.important === false &&
-      filter.urgent === false &&
-      filter.all === true
-    ) {
-      userTaskQueryReference = query(
-        userTaskCollectionReference,
-        orderBy(sortField, sortDirection),
-        limit(10)
-      )
-    }
-
-    // Incomplete Filter
-    if (
-      filter.important === true &&
-      filter.urgent === false &&
-      filter.complete === false &&
-      filter.all === false
-    ) {
-      userTaskQueryReference = query(
-        userTaskCollectionReference,
-        orderBy(sortField, sortDirection),
-        limit(10),
-        where('important', '==', true),
-        where('status', '==', 'incomplete')
-      )
-    }
-    if (
-      filter.important === true &&
-      filter.urgent === true &&
-      filter.complete === false &&
-      filter.all === false
-    ) {
-      userTaskQueryReference = query(
-        userTaskCollectionReference,
-        orderBy(sortField, sortDirection),
-        limit(10),
-        where('important', '==', true),
-        where('urgent', '==', true),
-        where('status', '==', 'incomplete')
-      )
-    }
-    if (
-      filter.important === false &&
-      filter.urgent === true &&
-      filter.complete === false &&
-      filter.all === false
-    ) {
-      userTaskQueryReference = query(
-        userTaskCollectionReference,
-        orderBy(sortField, sortDirection),
-        limit(10),
-        where('urgent', '==', true),
-        where('status', '==', 'incomplete')
-      )
-    }
-    if (
-      filter.important === false &&
-      filter.urgent === false &&
-      filter.complete === false &&
-      filter.all === false
-    ) {
-      userTaskQueryReference = query(
-        userTaskCollectionReference,
-        orderBy(sortField, sortDirection),
-        limit(10),
-        where('status', '==', 'incomplete')
-      )
-    }
-
-    // Complete Filter
-    if (
-      filter.important === true &&
-      filter.urgent === false &&
-      filter.complete === true &&
-      filter.all === false
-    ) {
-      userTaskQueryReference = query(
-        userTaskCollectionReference,
-        orderBy(sortField, sortDirection),
-        limit(10),
-        where('important', '==', true),
-        where('status', '==', 'complete')
-      )
-    }
-    if (
-      filter.important === true &&
-      filter.urgent === true &&
-      filter.complete === true &&
-      filter.all === false
-    ) {
-      userTaskQueryReference = query(
-        userTaskCollectionReference,
-        orderBy(sortField, sortDirection),
-        limit(10),
-        where('important', '==', true),
-        where('urgent', '==', true),
-        where('status', '==', 'complete')
-      )
-    }
-    if (
-      filter.important === false &&
-      filter.urgent === true &&
-      filter.complete === true &&
-      filter.all === false
-    ) {
-      userTaskQueryReference = query(
-        userTaskCollectionReference,
-        orderBy(sortField, sortDirection),
-        limit(10),
-        where('urgent', '==', true),
-        where('status', '==', 'complete')
-      )
-    }
-    if (
-      filter.important === false &&
-      filter.urgent === false &&
-      filter.complete === true &&
-      filter.all === false
-    ) {
-      userTaskQueryReference = query(
-        userTaskCollectionReference,
-        orderBy(sortField, sortDirection),
-        limit(10),
-        where('status', '==', 'complete')
-      )
-    }
+    // Building the query
+    const userTaskQueryReference = query(
+      userTaskCollectionReference,
+      orderBy(sortField, sortDirection),
+      ...queryConstraints
+    )
 
     // Snapshot logic
     const unsub = onSnapshot(
@@ -222,12 +84,21 @@ export const TaskContextProvider = ({ children }) => {
         const tasks = []
         if (querySnapshot.empty) {
           setData(tasks)
+          setPageSet(0)
+          setTotalItems(0)
+          setLastPageSize(0)
+          setNumberOfFullPages(0)
           return
+        } else {
+          querySnapshot.forEach(
+            (doc) => tasks.push({ id: doc.id, ...doc.data() }) //doc.data() does not include id
+          )
+          setData(tasks)
+          setPageSet(0)
+          setTotalItems(querySnapshot.size)
+          setLastPageSize(querySnapshot.size % pageLimit)
+          setNumberOfFullPages(Math.floor(querySnapshot.size / pageLimit))
         }
-        querySnapshot.forEach(
-          (doc) => tasks.push({ id: doc.id, ...doc.data() }) //doc.data() does not include id
-        )
-        setData(tasks)
       },
       (error) => {
         unsub()
@@ -245,29 +116,7 @@ export const TaskContextProvider = ({ children }) => {
     return () => {
       unsub()
     }
-  }, [userID, sortField, sortDirection, filter, setLoading, toast])
-
-  // Adding data (Currently handled by component)
-
-  // Updating data (Not used atm)
-  // const updateTask = async (docRef, title, description, important, urgent) => {
-  //   try {
-  //     await updateDoc(docRef, {
-  //       title: title,
-  //       description: description,
-  //       updatedAt: serverTimestamp(),
-  //       important,
-  //       urgent,
-  //     })
-  //   } catch (error) {
-  //     toast({
-  //       status: 'error',
-  //       title: 'An error has occured',
-  //       description: `${error.message}`,
-  //       isClosable: true,
-  //     })
-  //   }
-  // }
+  }, [sortField, sortDirection, filter, setLoading, toast, authenticated, user])
 
   // Returning Context Provider
   const value = {
@@ -277,7 +126,12 @@ export const TaskContextProvider = ({ children }) => {
     sortField,
     setSortField,
     setSortDirection,
-    // updateTask,
+    pageLimit,
+    totalItems,
+    lastPageSize,
+    numberOfFullPages,
+    pageSet,
+    setPageSet,
   }
   return <TaskContext.Provider value={value}>{children}</TaskContext.Provider>
 }
