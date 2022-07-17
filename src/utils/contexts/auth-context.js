@@ -4,6 +4,7 @@ import {
   GoogleAuthProvider,
   OAuthProvider,
   onAuthStateChanged,
+  signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
 } from 'firebase/auth'
@@ -68,13 +69,14 @@ export const AuthContextProvider = ({ children }) => {
       title: `You're currently signed in`,
       description: `${description}`,
     })
+    setLoading(false)
   }
 
   const onEmailPasswordSignUp = async (email, password) => {
     if (!authenticated) {
       setLoading(true)
-      await createUserWithEmailAndPassword(clientAuth, email, password)
       try {
+        await createUserWithEmailAndPassword(clientAuth, email, password)
         toast({
           status: 'success',
           title: 'We have successfully created your account',
@@ -88,6 +90,7 @@ export const AuthContextProvider = ({ children }) => {
           description: `${error}`,
           isClosable: true,
         })
+        setLoading(false)
       }
     } else {
       alreadyLoggedInResponse({
@@ -108,6 +111,7 @@ export const AuthContextProvider = ({ children }) => {
           description: `${error}`,
           isClosable: true,
         })
+        setLoading(false)
       }
     }
   }
@@ -131,6 +135,7 @@ export const AuthContextProvider = ({ children }) => {
           description: `${error}`,
           isClosable: true,
         })
+        setLoading(false)
       }
     } else {
       alreadyLoggedInResponse({
@@ -158,6 +163,7 @@ export const AuthContextProvider = ({ children }) => {
           description: `${error}`,
           isClosable: true,
         })
+        setLoading(false)
       }
     } else {
       alreadyLoggedInResponse({
@@ -183,6 +189,7 @@ export const AuthContextProvider = ({ children }) => {
           description: `${error}`,
           isClosable: true,
         })
+        setLoading(false)
       }
     }
   }
