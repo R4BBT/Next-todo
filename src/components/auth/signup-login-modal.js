@@ -22,7 +22,6 @@ import { GoogleLoginButton } from 'components/auth'
 import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useAuth } from 'utils/contexts/auth-context'
-import { useFormReset } from 'utils/hooks'
 import { MicrosoftLoginButton } from './microsoft-login'
 
 export const SignUpLoginModal = ({
@@ -55,10 +54,16 @@ export const SignUpLoginModal = ({
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting },
+    reset,
+    formState: { isSubmitting, isSubmitSuccessful },
   } = useForm()
   const { ref, ...rest } = register('email', { required: true })
-  useFormReset()
+
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset()
+    }
+  }, [reset, isSubmitSuccessful])
 
   const formSubmitHandler = async (data) => {
     signUpMode

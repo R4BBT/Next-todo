@@ -16,7 +16,6 @@ import { forwardRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { BsFillExclamationTriangleFill, BsHourglassSplit } from 'react-icons/bs'
 import { TbCalendarTime } from 'react-icons/tb'
-import { useFormReset } from 'utils/hooks'
 
 // TextInput component
 const TextInput = forwardRef((props, ref) => {
@@ -43,8 +42,13 @@ export const UpdateForm = ({
 }) => {
   // Initialize
   const toast = useToast()
-
-  const { handleSubmit, register, setValue } = useForm({
+  const {
+    handleSubmit,
+    register,
+    setValue,
+    reset,
+    formState: { isSubmitting, isSubmitSuccessful },
+  } = useForm({
     defaultValues: {
       title: title,
       description: description,
@@ -54,7 +58,11 @@ export const UpdateForm = ({
       urgent: urgent,
     },
   })
-  useFormReset()
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset()
+    }
+  }, [reset, isSubmitSuccessful])
 
   // Color control
   const inputColor = useColorModeValue('black', 'white')
@@ -159,7 +167,7 @@ export const UpdateForm = ({
         <Button type="button" variant="outline" onClick={onCancel}>
           Cancel
         </Button>
-        <Button colorScheme="teal" type="submit">
+        <Button colorScheme="teal" type="submit" isLoading={isSubmitting}>
           Save
         </Button>
       </ButtonGroup>
