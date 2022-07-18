@@ -11,17 +11,24 @@ import {
   useToast,
 } from '@chakra-ui/react'
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { BsFillExclamationTriangleFill, BsHourglassSplit } from 'react-icons/bs'
 import { TbCalendarTime } from 'react-icons/tb'
-import { clientAuth, db } from 'utils/configs/firebase-client'
-import { useFormReset } from 'utils/hooks'
+import { db } from 'utils/configs/firebase-client'
+import { useAuth } from 'utils/contexts/auth-context'
 
 export const AddTodoInput = () => {
   // Initialize component
   const toast = useToast()
-  const { handleSubmit, register, setError, setValue } = useForm({
+  const {
+    handleSubmit,
+    register,
+    setError,
+    setValue,
+    reset,
+    formState: { isSubmitSuccessful },
+  } = useForm({
     defaultValues: {
       title: '',
       description: '',
@@ -31,20 +38,13 @@ export const AddTodoInput = () => {
       status: 'incomplete',
     },
   })
-  useFormReset()
+  const { authenticated, user } = useAuth()
 
-  // For testing FormReset, can be deleted. Remeber to import useEffect() and formState in useForm()
-  // useEffect(() => {
-  //   if (formState.isSubmitSuccessful) {
-  //     console.log('Submit Successful')
-  //   }
-  //   if (formState.isSubmitted) {
-  //     console.log('Submitted')
-  //   }
-  //   if (formState.isSubmitting) {
-  //     console.log('Submitting')
-  //   }
-  // }, [formState])
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset()
+    }
+  }, [reset, isSubmitSuccessful])
 
   // Color control
   const inputColor = useColorModeValue('black', 'white')
@@ -73,7 +73,7 @@ export const AddTodoInput = () => {
   }
 
   // Controller logic
-  let userID = clientAuth.currentUser ? clientAuth.currentUser.uid : 'anonymous'
+  let userID = authenticated ? user.uid : 'anonymous'
 
   // For adding pageCounter later on
   // const userDocRef = doc(db, 'todos', userID)

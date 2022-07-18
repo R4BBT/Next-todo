@@ -16,10 +16,9 @@ import {
   ModalOverlay,
   Stack,
 } from '@chakra-ui/react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useAuth } from 'utils/contexts/auth-context'
-import { useFormReset } from 'utils/hooks'
 
 // TODO: look into formState errors showing
 // TODO: Look into redirect to another page
@@ -40,11 +39,17 @@ export const SignUpModal = ({ isOpen, onClose }) => {
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting },
+    reset,
+    formState: { isSubmitting, isSubmitSuccessful },
   } = useForm()
   const { ref, ...rest } = register('email', { required: true })
-  useFormReset()
+  useEffect(() => {
+    if (isSubmitSuccessful) {
+      reset()
+    }
+  }, [reset, isSubmitSuccessful])
 
+  // SignUp Form Submit Handler
   const signUpFormSubmitHandler = async (data) => {
     onEmailPasswordSignUp(data.email, data.password)
   }
