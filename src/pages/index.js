@@ -1,4 +1,5 @@
 import { SimpleGrid } from '@chakra-ui/react'
+import { Protect } from 'components/auth'
 import { Title } from 'components/page'
 import { AddTodos, FilterTodos, ViewTodos } from 'components/todo'
 
@@ -12,11 +13,13 @@ const Home = () => {
   return (
     <>
       <Title title="Todo Application" />
-      <SimpleGrid gridTemplateColumns="1fr" gridAutoRows="auto">
-        <AddTodos colSpan={1} />
-        <FilterTodos colSpan={1} />
-        <ViewTodos colSpan={1} />
-      </SimpleGrid>
+      <Protect>
+        <SimpleGrid gridTemplateColumns="1fr" gridAutoRows="auto">
+          <AddTodos colSpan={1} />
+          <FilterTodos colSpan={1} />
+          <ViewTodos colSpan={1} />
+        </SimpleGrid>
+      </Protect>
     </>
   )
 }

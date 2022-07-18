@@ -11,11 +11,12 @@ import {
   useToast,
 } from '@chakra-ui/react'
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { BsFillExclamationTriangleFill, BsHourglassSplit } from 'react-icons/bs'
 import { TbCalendarTime } from 'react-icons/tb'
 import { db } from 'utils/configs/firebase-client'
+import { useAuth } from 'utils/contexts/auth-context'
 
 export const AddTodoInput = () => {
   // Initialize component
