@@ -157,7 +157,7 @@ export const SignUpLoginModal = ({
               w="full"
               type="submit"
               variant="solid"
-              colorScheme="red"
+              colorScheme="orange"
             >
               {signUpMode ? 'SignUp' : 'Login'}
             </Button>

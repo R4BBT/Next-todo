@@ -22,15 +22,18 @@ export const AuthContext = React.createContext({
   onMicrosoftLogin: () => {},
   onLogout: () => {},
   onEmailPasswordSignUp: () => {},
+  companyName: '',
 })
 
 export const useAuth = () => useContext(AuthContext)
 
 export const AuthContextProvider = ({ children }) => {
+  // Company name
+  const companyName = 'Todo Demo'
+
   const [loading, setLoading] = useState(true)
   const [authenticated, setAuthenticated] = useState(false)
   const [user, setUser] = useState({})
-
   const toast = useToast()
 
   useEffect(() => {
@@ -204,6 +207,7 @@ export const AuthContextProvider = ({ children }) => {
     onMicrosoftLogin,
     onLogout,
     onEmailPasswordSignUp,
+    companyName,
   }
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
