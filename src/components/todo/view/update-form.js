@@ -12,7 +12,7 @@ import {
   useToast,
 } from '@chakra-ui/react'
 import { serverTimestamp, updateDoc } from 'firebase/firestore'
-import { forwardRef, useEffect, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { BsFillExclamationTriangleFill, BsHourglassSplit } from 'react-icons/bs'
 import { TbCalendarTime } from 'react-icons/tb'
@@ -60,9 +60,18 @@ export const UpdateForm = ({
   })
   useEffect(() => {
     if (isSubmitSuccessful) {
+      importantButtonValueChanger(important)
+      urgentButtonValueChanger(urgent)
       reset()
     }
-  }, [reset, isSubmitSuccessful])
+  }, [
+    reset,
+    isSubmitSuccessful,
+    importantButtonValueChanger,
+    urgentButtonValueChanger,
+    important,
+    urgent,
+  ])
 
   // Color control
   const inputColor = useColorModeValue('black', 'white')
@@ -70,23 +79,33 @@ export const UpdateForm = ({
 
   // Buttons logic
   const [importantTask, setImportantTask] = useState(important)
+  const [urgentTask, setUrgentTask] = useState(urgent)
+  const importantButtonValueChanger = useCallback(
+    (value) => {
+      setValue('important', value)
+      setImportantTask(value)
+    },
+    [setValue, setImportantTask]
+  )
+  const urgentButtonValueChanger = useCallback(
+    (value) => {
+      setValue('urgent', value)
+      setUrgentTask(value)
+    },
+    [setValue, setUrgentTask]
+  )
   const importantIconClickHandler = () => {
     if (importantTask) {
-      setValue('important', false)
-      setImportantTask(false)
+      importantButtonValueChanger(false)
     } else {
-      setValue('important', true)
-      setImportantTask(true)
+      importantButtonValueChanger(true)
     }
   }
-  const [urgentTask, setUrgentTask] = useState(urgent)
   const urgentIconClickHandler = () => {
     if (urgentTask) {
-      setValue('urgent', false)
-      setUrgentTask(false)
+      urgentButtonValueChanger(false)
     } else {
-      setValue('urgent', true)
-      setUrgentTask(true)
+      urgentButtonValueChanger(true)
     }
   }
 

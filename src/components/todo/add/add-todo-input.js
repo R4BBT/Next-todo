@@ -11,7 +11,7 @@ import {
   useToast,
 } from '@chakra-ui/react'
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { BsFillExclamationTriangleFill, BsHourglassSplit } from 'react-icons/bs'
 import { TbCalendarTime } from 'react-icons/tb'
@@ -21,6 +21,43 @@ import { useAuth } from 'utils/contexts/auth-context'
 export const AddTodoInput = () => {
   // Initialize component
   const toast = useToast()
+  const { authenticated, user } = useAuth()
+  const inputColor = useColorModeValue('black', 'white')
+  const activeColor = useColorModeValue('red', 'salmon')
+
+  // Buttons logic
+  const [importantTask, setImportantTask] = useState(false)
+  const [urgentTask, setUrgentTask] = useState(false)
+  const importantButtonValueChanger = useCallback(
+    (value) => {
+      setValue('important', value)
+      setImportantTask(value)
+    },
+    [setValue, setImportantTask]
+  )
+  const urgentButtonValueChanger = useCallback(
+    (value) => {
+      setValue('urgent', value)
+      setUrgentTask(value)
+    },
+    [setValue, setUrgentTask]
+  )
+  const importantIconClickHandler = () => {
+    if (importantTask) {
+      importantButtonValueChanger(false)
+    } else {
+      importantButtonValueChanger(true)
+    }
+  }
+  const urgentIconClickHandler = () => {
+    if (urgentTask) {
+      urgentButtonValueChanger(false)
+    } else {
+      urgentButtonValueChanger(true)
+    }
+  }
+
+  // Form Logic
   const {
     handleSubmit,
     register,
@@ -38,39 +75,18 @@ export const AddTodoInput = () => {
       status: 'incomplete',
     },
   })
-  const { authenticated, user } = useAuth()
-
   useEffect(() => {
     if (isSubmitSuccessful) {
+      importantButtonValueChanger(false)
+      urgentButtonValueChanger(false)
       reset()
     }
-  }, [reset, isSubmitSuccessful])
-
-  // Color control
-  const inputColor = useColorModeValue('black', 'white')
-  const activeColor = useColorModeValue('red', 'salmon')
-
-  // Buttons logic
-  const [importantTask, setImportantTask] = useState(false)
-  const importantIconClickHandler = () => {
-    if (importantTask) {
-      setValue('important', false)
-      setImportantTask(false)
-    } else {
-      setValue('important', true)
-      setImportantTask(true)
-    }
-  }
-  const [urgentTask, setUrgentTask] = useState(false)
-  const urgentIconClickHandler = () => {
-    if (urgentTask) {
-      setValue('urgent', false)
-      setUrgentTask(false)
-    } else {
-      setValue('urgent', true)
-      setUrgentTask(true)
-    }
-  }
+  }, [
+    reset,
+    isSubmitSuccessful,
+    importantButtonValueChanger,
+    urgentButtonValueChanger,
+  ])
 
   // Controller logic
   let userID = authenticated ? user.uid : 'anonymous'
