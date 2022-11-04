@@ -4,6 +4,7 @@ import {
   Grid,
   GridItem,
 } from '@chakra-ui/react'
+import { Analytics } from '@vercel/analytics/react'
 import { ErrorBoundary } from 'components/error/error-boundary'
 import { Footer, Layout, Navbar } from 'components/page'
 import theme from 'styles/theme'
@@ -36,6 +37,7 @@ function MyApp({ Component, pageProps }) {
           <TaskContextProvider>
             <ColorModeScript initialColorMode={theme.config.initialColorMode} />
             {getLayout(<Component {...pageProps} />)}
+            <Analytics />
           </TaskContextProvider>
         </AuthContextProvider>
       </ChakraProvider>
