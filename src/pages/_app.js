@@ -7,6 +7,7 @@ import {
 import { Analytics } from '@vercel/analytics/react'
 import { ErrorBoundary } from 'components/error/error-boundary'
 import { Footer, Layout, Navbar } from 'components/page'
+import Head from 'next/head'
 import theme from 'styles/theme'
 import { AuthContextProvider } from 'utils/contexts/auth-context'
 import { TaskContextProvider } from 'utils/contexts/task-context'
@@ -35,6 +36,13 @@ function MyApp({ Component, pageProps }) {
       <ChakraProvider theme={theme}>
         <AuthContextProvider>
           <TaskContextProvider>
+            <Head>
+              <link rel="icon" href="/images/favicon.ico" />
+              <meta
+                name="viewport"
+                content="initial-scale=1.0, width=device-width"
+              />
+            </Head>
             <ColorModeScript initialColorMode={theme.config.initialColorMode} />
             {getLayout(<Component {...pageProps} />)}
             <Analytics />
